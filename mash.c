@@ -21,7 +21,9 @@ int get_input_size(char *);
 void execute_process(char**, int);
 void print_contents_of_file(char *);
 void create_temp_files(char *, char *, char *);
-void display_results(char *, char *, char *, char *, char *, char *, int, int, int);
+void display_results(char *, char *, char *, char *, char *, char *, double, double, double,
+        int,int,int);
+double handle_process(int, char *, char **, char *,int,char *);
 
 
 int main(void) {
@@ -157,9 +159,7 @@ void start_processes(char *cmd_one, char *cmd_two, char *cmd_three,
     char file_one[32], file_two[32], file_three[32];
     create_temp_files(file_one, file_two, file_three);
 
-    // Create some clocks to measure time elapse
-    clock_t start, end;
-    int cmd_one_time, cmd_two_time, cmd_three_time;
+    double cmd_one_time, cmd_two_time, cmd_three_time;
 
     int p1, p2, p3;
     p1 = fork();
@@ -167,65 +167,54 @@ void start_processes(char *cmd_one, char *cmd_two, char *cmd_three,
     if (p1 < 0) {
         fprintf(stderr, "fork failed\n");
     } else {
-        // Close standard output and store results in file
-        //close(STDOUT_FILENO);
-        if (p1 == 0) {
-            start = clock();
-            open(file_one, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
-            execvp(arg_one[0], arg_one);
-        } else {
-            // wait for process 1 to finish
-            end = clock();
-            cmd_one_time = ((double) (end - start));
-            int return_status;
-            waitpid(p1, &return_status, 0);
-            fprintf(stdout, "First process finished...\n");
-        }
+        close(STDOUT_FILENO);
+        cmd_one_time = handle_process(p1,file_one,arg_one,"First",1,cmd_one);
         if (p1 > 0) {
             p2 = fork();
-            if (p2 == 0) {
-                start = clock();
-                open(file_two, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
-                execvp(arg_two[0], arg_two);
-            }
-            else {
-                // wait for process 2 to finish
-                end = clock();
-                cmd_two_time = ((double) (end - start));
-                int return_status;
-                waitpid(p1, &return_status, 0);
-                fprintf(stdout, "Second process finished...\n");
-            }
+            cmd_two_time = handle_process(p2,file_two,arg_two,"Second",2,cmd_two);
             if (p2 > 0) {
                 p3 = fork();
-                if (p3 == 0) {
-                    start = clock();
-                    open(file_three, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
-                    execvp(arg_three[0], arg_three);
-                } else {
-                    // wait for process 3 to finish
-                    end = clock();
-                    cmd_three_time = ((double) (end - start));
-                    int return_status;
-                    waitpid(p1, &return_status, 0);
-                    fprintf(stdout, "Third process finished...\n");
-                }
+                cmd_three_time = handle_process(p3,file_three,arg_three,"Third",3,cmd_three);
                 if (p3 > 0) {
                     wait(NULL);
                 }
+                wait(NULL);
             }
+            wait(NULL);
         }
     }
-    wait(NULL);
     open(file, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
     display_results(cmd_one, cmd_two, cmd_three, 
             file_one, file_two, file_three,
-            cmd_one_time,cmd_two_time,cmd_three_time);
+            cmd_one_time,cmd_two_time,cmd_three_time,
+            p1,p2,p3);
+            
 
     // Delete temp files.
     unlink(file_one);
     unlink(file_two);
     unlink(file_three);
+}
+
+
+double handle_process(int pid, char *file, char **args, char* num_process, int num, char *cmd) {
+    double time;
+    clock_t start, end;
+    if (pid == 0) {
+        start = clock();
+        open(file, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
+        printf("-----CMD %d: %s---------------------------------------------------------\n", num,cmd);
+        execvp(args[0], args);
+    }
+    else {
+        // wait for process to finish
+        end = clock();
+        time = ((double) (end - start));
+        int return_status;
+        waitpid(pid, &return_status, 0);
+        fprintf(stdout, "%s process finished...\n", num_process);
+    }
+    return time;
 }
 
 /*
@@ -240,18 +229,17 @@ void start_processes(char *cmd_one, char *cmd_two, char *cmd_three,
  */
 void display_results(char *cmd_one, char *cmd_two, char *cmd_three,
         char *temp_one, char *temp_two, char *temp_three,
-        int t1, int t2, int t3) {
-
-    printf("-----CMD 1: %s---------------------------------------------------------\n", cmd_one);
-    print_contents_of_file(temp_one);
-    printf("Result took: %dms\n", t1);
-    printf("-----CMD 2: %s---------------------------------------------------------\n", cmd_two);
-    print_contents_of_file(temp_two);
-    printf("Result took: %dms\n", t2);
-    printf("-----CMD 3: %s---------------------------------------------------------\n", cmd_three);
-    print_contents_of_file(temp_three);
-    printf("Result took: %dms\n", t3);
-    puts("--------------------------------------------------------------------------------\n");
+        double t1, double t2, double t3,
+        int pid_one,int pid_two,int pid_three) {
+    
+       print_contents_of_file(temp_one);
+       printf("Result took: %fms\n", t1);
+       print_contents_of_file(temp_two);
+       printf("Result took: %fms\n", t2);
+       print_contents_of_file(temp_three);
+       printf("Result took: %fms\n", t3);
+       puts("--------------------------------------------------------------------------------");
+       printf("Children process IDs: %d %d %d.\n", pid_one,pid_two,pid_three);
 }
 
 

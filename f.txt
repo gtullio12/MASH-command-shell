@@ -1,0 +1,28 @@
+-----CMD 1: wc mash.c---------------------------------------------------------
+ 283  843 7988 mash.c
+Result took: -140730857128937.000000ms
+-----CMD 2: md5sum mash.c---------------------------------------------------------
+56acebc2e28ae3d9657358dfcac54513  mash.c
+Result took: -140730857128782.000000ms
+-----CMD 3: ls -alt---------------------------------------------------------
+total 1280
+drwxrwxr-x 3 gt gt    4096 May 10 18:51 .
+-rwx------ 1 gt gt      77 May 10 18:51 file_three-XXXXXXt
+-rwx------ 1 gt gt     124 May 10 18:51 file_two-XXXXXX‹œ‘V
+-rwx------ 1 gt gt     101 May 10 18:51 file_one-XXXXXXŒ¿tþ
+-rwxrwxr-x 1 gt gt   23312 May 10 18:51 mash
+-rw-r--r-- 1 gt gt   24576 May 10 18:51 .mash.c.swp
+-rw-rw-r-- 1 gt gt    7988 May 10 18:51 mash.c
+-rwx------ 1 gt gt     565 May 10 18:50 f.txt
+-rwx------ 1 gt gt       0 May 10 18:14 file_one-XXXXXXÎ=˜ý
+-rwx------ 1 gt gt       0 May 10 18:14 file_three-XXXXXX˜
+drwxrwxr-x 8 gt gt    4096 May 10 17:57 .git
+-rwx------ 1 gt gt     409 May 10 17:44 f.tct
+-rwx------ 1 gt gt       0 May 10 17:40 file_two-XXXXXX[i+±U
+-rw-rw-r-- 1 gt gt      59 May 10 16:17 makeFile
+drwxrwxr-x 5 gt gt    4096 May 10 12:29 ..
+-rwxrwxr-x 1 gt gt   20664 May  2 16:17 a.out
+-rw-rw-r-- 1 gt gt 1188965 May  2 12:42 TCSS422_s2021_A1.pdf
+Result took: -140730857128676.000000ms
+--------------------------------------------------------------------------------
+Children process IDs: 15642 15643 15644.
