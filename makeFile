@@ -1,0 +1,6 @@
+CC=gcc
+CFLAGS=-g
+
+mash: mash.c
+	$(CC) -o mash -g mash.c
+  
