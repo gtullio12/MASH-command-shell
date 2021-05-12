@@ -183,6 +183,7 @@ void start_processes(char *cmd_one, char *cmd_two, char *cmd_three,
             wait(NULL);
         }
     }
+    // Store results in File specified by user.
     open(file, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
     display_results(cmd_one, cmd_two, cmd_three, 
             file_one, file_two, file_three,
